@@ -5,6 +5,13 @@ metadata:
   namespace: argocd
 spec:
   project: default
+  ignoreDifferences:
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: bgppeers.metallb.io
+      jsonPointers:
+        - /status
+        - /metadata/annotations/kubectl.kubernetes.io~1last-applied-configuration
   source:
     repoURL: https://github.com/Nishchay16/k3s-gitops-assignment.git
     targetRevision: main

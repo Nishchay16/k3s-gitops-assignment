@@ -18,6 +18,7 @@ spec:
       jsonPointers:
         - /metadata/annotations/controller-gen.kubebuilder.io~1version
         - /status
+        - /metadata/annotations/kubectl.kubernetes.io~1last-applied-configuration
   syncPolicy:
     automated:
       prune: true
