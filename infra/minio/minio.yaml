@@ -82,7 +82,7 @@ spec:
     spec:
       containers:
       - name: csi-driver
-        # This is the most stable and available image for Minio CSI
+        # Quay.io is the official stable source for Minio now
         image: quay.io/minio/operator:v5.0.7
         args:
         - "controller"
