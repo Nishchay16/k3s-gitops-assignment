@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ui-static
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>UI App</title>
+    </head>
+    <body>
+      <h1>Welcome to UI App!</h1>
+    </body>
+    </html>

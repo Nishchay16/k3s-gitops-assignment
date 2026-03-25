@@ -14,11 +14,17 @@ spec:
     spec:
       containers:
       - name: ui-app
-        image: nginx:alpine
+        image: python:3.11-slim
+        command: ["python3", "-m", "http.server", "80"]
+        ports:
+        - containerPort: 80
         volumeMounts:
-        - name: ui-html
-          mountPath: /usr/share/nginx/html
+        - name: ui-static-volume
+          mountPath: /usr/src/app
       volumes:
-      - name: ui-html
+      - name: ui-static-volume
         configMap:
-          name: ui-html
+          name: ui-static
+          items:
+          - key: index.html
+            path: index.html

@@ -3,10 +3,11 @@ kind: Service
 metadata:
   name: ui-app
 spec:
+  type: NodePort
   selector:
     app: ui-app
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-  type: ClusterIP
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30081
