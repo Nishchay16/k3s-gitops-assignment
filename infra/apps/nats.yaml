@@ -14,31 +14,28 @@ spec:
         config:
           jetstream:
             enabled: true
-        # Attempt 1: Standard server container
-        container:
-          resources:
-            limits:
-              cpu: 100m
-              memory: 128Mi
-        # Attempt 2: nats-box deployment
-        natsBox:
-          container:
-            resources:
-              limits:
-                cpu: 100m
-                memory: 128Mi
-        # Attempt 3: The 'nats' key often used in 1.x charts
+        # The main server container resources
         nats:
           resources:
             limits:
               cpu: 100m
               memory: 128Mi
-        # Attempt 4: Sidecar reloader
+            requests:
+              cpu: 50m
+              memory: 64Mi
+        # The reloader sidecar (OPA sees this too!)
         reloader:
           resources:
             limits:
               cpu: 100m
-              memory: 128Mi
+              memory: 64Mi
+        # The nats-box tool
+        natsBox:
+          enabled: true
+          resources:
+            limits:
+              cpu: 100m
+              memory: 64Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: nats-io
@@ -48,4 +45,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - Validate=false # CRITICAL: Tells Argo to stop complaining and just PUSH the YAML
+      - Validate=false
