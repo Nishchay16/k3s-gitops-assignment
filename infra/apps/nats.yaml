@@ -8,13 +8,13 @@ spec:
   source:
     chart: nats
     repoURL: https://nats-io.github.io/k8s/helm/charts/
-    targetRevision: 1.2.x
+    targetRevision: 1.2.11
     helm:
       values: |
         config:
           jetstream:
             enabled: true
-        # Resource limits for the main NATS Server containers
+        # Main NATS Server
         nats:
           resources:
             limits:
@@ -23,18 +23,15 @@ spec:
             requests:
               cpu: 50m
               memory: 64Mi
-        # Resource limits for the NATS-Box (utility/test container)
-        natsBox:
-          enabled: true
+        # Sidecar Config Reloader
+        reloader:
           resources:
             limits:
               cpu: 100m
               memory: 64Mi
-            requests:
-              cpu: 50m
-              memory: 32Mi
-        # Resource limits for the ReRelay/Leaf nodes if enabled
-        reloader:
+        # The nats-box deployment (separate from the statefulset)
+        natsBox:
+          enabled: true
           resources:
             limits:
               cpu: 100m
