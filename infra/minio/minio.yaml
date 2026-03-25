@@ -65,8 +65,6 @@ provisioner: driver.minio.io
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
 ---
-# 3. MINIO CSI DRIVER (The Translator/Provisioner)
-# This is what handles the 'driver.minio.io' requests
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -84,10 +82,10 @@ spec:
     spec:
       containers:
       - name: csi-driver
-        image: minio/csi-driver:latest
+        # Use this specific versioned image instead of 'latest'
+        image: minio/directpv:v4.0.0
         args:
-        - "--endpoint=$(MINIO_ENDPOINT)"
-        - "--nodeid=$(NODE_ID)"
+        - "controller"
         env:
         - name: MINIO_ENDPOINT
           value: "http://minio.minio-system.svc.cluster.local:9000"
@@ -95,11 +93,8 @@ spec:
           value: "admin"
         - name: MINIO_SECRET_KEY
           value: "password123"
-        - name: NODE_ID
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
         resources:
           limits:
             cpu: 100m
             memory: 128Mi
+        imagePullPolicy: IfNotPresent
