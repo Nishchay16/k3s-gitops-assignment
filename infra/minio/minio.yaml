@@ -82,8 +82,8 @@ spec:
     spec:
       containers:
       - name: csi-driver
-        # Use this specific versioned image instead of 'latest'
-        image: minio/directpv:v4.0.0
+        # This is the most stable and available image for Minio CSI
+        image: quay.io/minio/operator:v5.0.7
         args:
         - "controller"
         env:
@@ -97,4 +97,3 @@ spec:
           limits:
             cpu: 100m
             memory: 128Mi
-        imagePullPolicy: IfNotPresent
