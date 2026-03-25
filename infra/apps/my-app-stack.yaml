@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-app-stack
+  namespace: argocd
+spec:
+  project: default
+  source:
+    path: infra/app-stack
+    repoURL: https://github.com/Nishchay16/k3s-gitops-assignment.git
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: my-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

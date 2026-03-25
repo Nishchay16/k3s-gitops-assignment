@@ -1,0 +1,140 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: my-app
+---
+# 1. UI SERVICE (Nginx with NATS client capability)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-service
+  namespace: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    metadata:
+      labels:
+        app: ui
+    spec:
+      containers:
+      - name: ui
+        image: nginx:alpine
+        env:
+        - name: NATS_URL
+          value: "nats://nats.nats-system.svc.cluster.local:4222"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui-service
+  namespace: my-app
+spec:
+  selector:
+    app: ui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+# 2. HTTP BACKEND (Synchronous API)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-service
+  namespace: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http
+  template:
+    metadata:
+      labels:
+        app: http
+    spec:
+      containers:
+      - name: http
+        image: hashicorp/http-echo
+        args: ["-text=HTTP Backend: Received Sync Request via ClusterIP"]
+        ports:
+        - containerPort: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-service
+  namespace: my-app
+spec:
+  selector:
+    app: http
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5678
+---
+# 3. WEBSOCKET SERVICE (External Access via Traefik)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ws-service
+  namespace: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ws
+  template:
+    metadata:
+      labels:
+        app: ws
+    spec:
+      containers:
+      - name: ws
+        image: jwilder/whoami
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ws-service
+  namespace: my-app
+spec:
+  selector:
+    app: ws
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+---
+# 4. TRAEFIK INGRESS (External Deliverable)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: my-app
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /ws
+        pathType: Prefix
+        backend:
+          service:
+            name: ws-service
+            port:
+              number: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ui-service
+            port:
+              number: 80
