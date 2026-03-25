@@ -97,3 +97,35 @@ spec:
           limits:
             cpu: 100m
             memory: 128Mi
+---
+# 4. RBAC for Minio CSI Driver
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: minio-csi-role
+rules:
+  - apiGroups: [""]
+    resources: ["services", "endpoints", "pods", "secrets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["statefulsets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["volumeattachments"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: minio-csi-binding
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: minio-system
+roleRef:
+  kind: ClusterRole
+  name: minio-csi-role
+  apiGroup: rbac.authorization.k8s.io
