@@ -2,10 +2,16 @@ apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sRequiredResources
 metadata:
   name: must-have-cpu-limits
-  annotations:
-    argocd.argoproj.io/sync-wave: "5"
 spec:
   match:
     kinds:
       - apiGroups: [""]
         kinds: ["Pod"]
+    # ADD THIS SECTION BELOW
+    excludedNamespaces:
+      - kube-system
+      - argocd
+      - argo-workflows
+      - nats-io
+  parameters:
+    cpu: "100m"
