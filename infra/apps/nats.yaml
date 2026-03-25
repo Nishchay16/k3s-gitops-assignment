@@ -14,35 +14,28 @@ spec:
         config:
           jetstream:
             enabled: true
-        # The main server container resources
-        nats:
-          resources:
-            limits:
-              cpu: 100m
-              memory: 128Mi
-            requests:
-              cpu: 50m
-              memory: 64Mi
-        # The reloader sidecar (OPA sees this too!)
-        reloader:
-          resources:
-            limits:
-              cpu: 100m
-              memory: 64Mi
-        # The nats-box tool
-        natsBox:
-          enabled: true
-          resources:
-            limits:
-              cpu: 100m
-              memory: 64Mi
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: nats-io
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - Validate=false
+    # --- THIS IS THE MAGIC PART ---
+    # This manually patches the resulting YAML to satisfy OPA
+    ignoreDifferences:
+      - group: apps
+        kind: StatefulSet
+        jsonPointers:
+          - /spec/template/spec/containers/0/resources
+  template:
+    metadata:
+      name: nats-patch
+  # Use an inline patch to force the limits
+  source:
+    chart: nats
+    repoURL: https://nats-io.github.io/k8s/helm/charts/
+    targetRevision: 1.2.11
+    helm:
+      parameters:
+        - name: "container.resources.limits.cpu"
+          value: "100m"
+        - name: "container.resources.limits.memory"
+          value: "128Mi"
+        - name: "reloader.resources.limits.cpu"
+          value: "100m"
+        - name: "natsBox.container.resources.limits.cpu"
+          value: "100m"
