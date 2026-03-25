@@ -104,30 +104,22 @@ metadata:
   name: minio-csi-role
 rules:
   - apiGroups: [""]
-    resources: ["services", "endpoints", "pods", "secrets", "namespaces"]
-    verbs: ["get", "list", "watch", "patch"] # Added patch and namespaces
+    resources: ["*"] # Broaden for the final fix
+    verbs: ["*"]
   - apiGroups: ["apps"]
     resources: ["statefulsets", "deployments"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["*"]
+  - apiGroups: ["minio.min.io"] # Added this for the Tenant errors
+    resources: ["*"]
+    verbs: ["*"]
+  - apiGroups: ["sts.min.io"] # Added this for the PolicyBinding errors
+    resources: ["*"]
+    verbs: ["*"]
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
+    verbs: ["*"]
   - apiGroups: ["storage.k8s.io"]
-    resources: ["volumeattachments", "storageclasses"]
-    verbs: ["get", "list", "watch", "update", "patch"]
-  - apiGroups: ["sts.min.io"] # Adding this for the PolicyBinding errors seen earlier
     resources: ["*"]
     verbs: ["*"]
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: minio-csi-binding
-subjects:
-  - kind: ServiceAccount
-    name: default
-    namespace: minio-system
-roleRef:
-  kind: ClusterRole
-  name: minio-csi-role
-  apiGroup: rbac.authorization.k8s.io
+# (Keep ClusterRoleBinding as is)
