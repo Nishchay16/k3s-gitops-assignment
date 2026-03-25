@@ -98,24 +98,26 @@ spec:
             cpu: 100m
             memory: 128Mi
 ---
-# 4. RBAC for Minio CSI Driver
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: minio-csi-role
 rules:
   - apiGroups: [""]
-    resources: ["services", "endpoints", "pods", "secrets"]
-    verbs: ["get", "list", "watch"]
+    resources: ["services", "endpoints", "pods", "secrets", "namespaces"]
+    verbs: ["get", "list", "watch", "patch"] # Added patch and namespaces
   - apiGroups: ["apps"]
-    resources: ["statefulsets"]
+    resources: ["statefulsets", "deployments"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
     verbs: ["get", "list", "watch", "create", "update", "patch"]
   - apiGroups: ["storage.k8s.io"]
-    resources: ["volumeattachments"]
+    resources: ["volumeattachments", "storageclasses"]
     verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["sts.min.io"] # Adding this for the PolicyBinding errors seen earlier
+    resources: ["*"]
+    verbs: ["*"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
