@@ -46,3 +46,12 @@ spec:
     targetPort: 9001
   selector:
     app: minio
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: minio-csi-storage
+provisioner: driver.minio.io # This matches the standard Minio CSI provisioner
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+volumeBindingMode: Immediate
