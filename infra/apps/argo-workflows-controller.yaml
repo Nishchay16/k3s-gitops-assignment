@@ -14,6 +14,39 @@ spec:
         server:
           extraArgs:
             - --auth-mode=server
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+        
+        controller:
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+        
+        # This is critical: it sets the default limits for the pods 
+        # that actually run your workflow steps!
+        workflow:
+          serviceAccount:
+            create: true
+          rbac:
+            create: true
+        
+        executor:
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: argo-workflows
