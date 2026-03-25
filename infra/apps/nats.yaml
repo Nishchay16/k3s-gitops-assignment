@@ -14,8 +14,8 @@ spec:
         config:
           jetstream:
             enabled: true
-        # Main NATS Server
-        nats:
+        # For this chart version, resources go inside 'container'
+        container:
           resources:
             limits:
               cpu: 100m
@@ -29,13 +29,14 @@ spec:
             limits:
               cpu: 100m
               memory: 64Mi
-        # The nats-box deployment (separate from the statefulset)
+        # NATS Box deployment
         natsBox:
           enabled: true
-          resources:
-            limits:
-              cpu: 100m
-              memory: 64Mi
+          container:
+            resources:
+              limits:
+                cpu: 100m
+                memory: 64Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: nats-io
