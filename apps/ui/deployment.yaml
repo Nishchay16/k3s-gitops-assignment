@@ -16,6 +16,7 @@ spec:
       - name: ui-app
         image: python:3.11-slim
         command: ["python3", "-m", "http.server", "80"]
+        workingDir: /usr/src/app
         ports:
         - containerPort: 80
         volumeMounts:
