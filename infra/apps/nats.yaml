@@ -6,39 +6,23 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://nats-io.github.io/k8s/helm/charts/
     chart: nats
+    repoURL: https://nats-io.github.io/k8s/helm/charts/
     targetRevision: 1.2.11
     helm:
-      parameters:
-        - name: "resources.limits.cpu"
-          value: "100m"
-        - name: "resources.limits.memory"
-          value: "128Mi"
-        - name: "resources.requests.cpu"
-          value: "50m"
-        - name: "resources.requests.memory"
-          value: "64Mi"
-        - name: "natsBox.resources.limits.cpu"
-          value: "100m"
-        - name: "natsBox.resources.limits.memory"
-          value: "128Mi"
-        - name: "natsBox.resources.requests.cpu"
-          value: "50m"
-        - name: "natsBox.resources.requests.memory"
-          value: "64Mi"
-        - name: "reloader.resources.limits.cpu"
-          value: "100m"
-        - name: "reloader.resources.limits.memory"
-          value: "128Mi"
-        - name: "reloader.resources.requests.cpu"
-          value: "50m"
-        - name: "reloader.resources.requests.memory"
-          value: "64Mi"
-        - name: "natsBox.enabled"
-          value: "true"
-        - name: "jetstream.enabled"
-          value: "true"
+      values: |
+        config:
+          jetstream:
+            enabled: true
+        # We'll keep basic limits just for good practice, 
+        # but OPA won't block us anymore if we miss one.
+        container:
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+        natsBox:
+          enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: nats-io
@@ -46,3 +30,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
