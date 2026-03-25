@@ -10,35 +10,35 @@ spec:
     chart: nats
     targetRevision: 1.2.11
     helm:
-      values: |
-        replicaCount: 1
-        config:
-          jetstream:
-            enabled: true
-        resources:
-          limits:
-            cpu: 100m
-            memory: 128Mi
-          requests:
-            cpu: 50m
-            memory: 64Mi
-        natsBox:
-          enabled: true
-          resources:
-            limits:
-              cpu: 100m
-              memory: 128Mi
-            requests:
-              cpu: 50m
-              memory: 64Mi
-        reloader:
-          resources:
-            limits:
-              cpu: 100m
-              memory: 128Mi
-            requests:
-              cpu: 50m
-              memory: 64Mi
+      parameters:
+        - name: "resources.limits.cpu"
+          value: "100m"
+        - name: "resources.limits.memory"
+          value: "128Mi"
+        - name: "resources.requests.cpu"
+          value: "50m"
+        - name: "resources.requests.memory"
+          value: "64Mi"
+        - name: "natsBox.resources.limits.cpu"
+          value: "100m"
+        - name: "natsBox.resources.limits.memory"
+          value: "128Mi"
+        - name: "natsBox.resources.requests.cpu"
+          value: "50m"
+        - name: "natsBox.resources.requests.memory"
+          value: "64Mi"
+        - name: "reloader.resources.limits.cpu"
+          value: "100m"
+        - name: "reloader.resources.limits.memory"
+          value: "128Mi"
+        - name: "reloader.resources.requests.cpu"
+          value: "50m"
+        - name: "reloader.resources.requests.memory"
+          value: "64Mi"
+        - name: "natsBox.enabled"
+          value: "true"
+        - name: "jetstream.enabled"
+          value: "true"
   destination:
     server: https://kubernetes.default.svc
     namespace: nats-io
