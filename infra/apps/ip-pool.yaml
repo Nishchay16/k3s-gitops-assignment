@@ -5,10 +5,13 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-  - 192.168.1.240-192.168.1.250 
+  - 10.72.192.200-10.72.192.220
 ---
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
 metadata:
   name: l2
   namespace: metallb-system
+spec:
+  ipAddressPools:
+  - default-pool
