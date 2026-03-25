@@ -126,4 +126,27 @@ rules:
     resources: ["*"]
     verbs: ["*"]
 ---
-# (Keep ClusterRoleBinding as is)
+apiVersion: minio.min.io/v2
+kind: Tenant
+metadata:
+  name: minio-tenant
+  namespace: minio-system
+spec:
+  image: minio/minio:latest
+  pools:
+    - servers: 1
+      volumesPerServer: 1
+      size: 1Gi
+      storageClassName: local-path # This uses the underlying k3s storage
+  mountpath: /export
+  credsSecret:
+    name: minio-creds-secret
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: minio-creds-secret
+  namespace: minio-system
+stringData:
+  accesskey: "admin"
+  secretkey: "password123"
