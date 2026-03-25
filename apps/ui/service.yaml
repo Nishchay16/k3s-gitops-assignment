@@ -6,8 +6,7 @@ spec:
   selector:
     app: ui-app
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
-    nodePort: 30081
-  type: NodePort
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP

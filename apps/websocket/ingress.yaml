@@ -3,13 +3,13 @@ kind: Ingress
 metadata:
   name: websocket-ingress
   annotations:
-    kubernetes.io/ingress.class: traefik
+    kubernetes.io/ingress.class: "traefik"
 spec:
   rules:
   - host: ws.local
     http:
       paths:
-      - path: /
+      - path: /ws
         pathType: Prefix
         backend:
           service:

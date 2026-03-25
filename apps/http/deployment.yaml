@@ -14,6 +14,14 @@ spec:
     spec:
       containers:
       - name: http-app
-        image: nginx:latest
+        image: python:3.11-slim
+        command: ["python3", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
         ports:
         - containerPort: 80
+        volumeMounts:
+        - name: http-code
+          mountPath: /app
+      volumes:
+      - name: http-code
+        configMap:
+          name: http-code
