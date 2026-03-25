@@ -1,3 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: minio-system
+---
+# 1. MINIO SERVER (The actual storage)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,10 +31,14 @@ spec:
         - name: MINIO_ROOT_USER
           value: "admin"
         - name: MINIO_ROOT_PASSWORD
-          value: "password123" # Don't use this in real production!
+          value: "password123"
         ports:
         - containerPort: 9000
         - containerPort: 9001
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
 ---
 apiVersion: v1
 kind: Service
@@ -36,7 +46,6 @@ metadata:
   name: minio
   namespace: minio-system
 spec:
-  type: LoadBalancer
   ports:
   - name: api
     port: 9000
@@ -47,11 +56,50 @@ spec:
   selector:
     app: minio
 ---
+# 2. STORAGE CLASS (The Map)
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: minio-csi-storage
-provisioner: driver.minio.io # This matches the standard Minio CSI provisioner
+provisioner: driver.minio.io
 reclaimPolicy: Retain
-allowVolumeExpansion: true
 volumeBindingMode: Immediate
+---
+# 3. MINIO CSI DRIVER (The Translator/Provisioner)
+# This is what handles the 'driver.minio.io' requests
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio-csi-driver
+  namespace: minio-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio-csi-driver
+  template:
+    metadata:
+      labels:
+        app: minio-csi-driver
+    spec:
+      containers:
+      - name: csi-driver
+        image: minio/csi-driver:latest
+        args:
+        - "--endpoint=$(MINIO_ENDPOINT)"
+        - "--nodeid=$(NODE_ID)"
+        env:
+        - name: MINIO_ENDPOINT
+          value: "http://minio.minio-system.svc.cluster.local:9000"
+        - name: MINIO_ACCESS_KEY
+          value: "admin"
+        - name: MINIO_SECRET_KEY
+          value: "password123"
+        - name: NODE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
