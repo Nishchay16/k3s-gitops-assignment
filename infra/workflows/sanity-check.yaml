@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: infra-sanity-check
+  namespace: argo-workflows
+spec:
+  entrypoint: main
+  templates:
+    - name: main
+      steps:
+        - - name: check-nats-connectivity
+            template: nats-check
+        - - name: check-minio-storage
+            template: storage-check
+
+    - name: nats-check
+      container:
+        image: busybox
+        command: [sh, -c]
+        # Checks if NATS is answering on port 4222
+        args: ["nc -zv nats.nats-io.svc 4222"]
+        resources:
+          limits:
+            cpu: "100m"
+            memory: "64Mi"
+
+    - name: storage-check
+      container:
+        image: busybox
+        command: [sh, -c]
+        # Verifies the Minio CSI volume is mounted
+        args: ["mount | grep /data && echo 'Minio Storage Mounted'"]
+        volumeMounts:
+          - name: test-pvc
+            mountPath: /data
+        resources:
+          limits:
+            cpu: "100m"
+            memory: "64Mi"
+      volumes:
+        - name: test-pvc
+          persistentVolumeClaim:
+            claimName: sanity-test-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sanity-test-pvc
+  namespace: argo-workflows
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: minio-csi-storage
+  resources:
+    requests:
+      storage: 500Mi
