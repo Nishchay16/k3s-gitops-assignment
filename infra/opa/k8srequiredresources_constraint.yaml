@@ -2,6 +2,8 @@ apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sRequiredResources
 metadata:
   name: must-have-cpu-limits
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
 spec:
   match:
     kinds:
