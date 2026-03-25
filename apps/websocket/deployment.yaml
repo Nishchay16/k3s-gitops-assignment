@@ -1,19 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: http-app
+  name: websocket-app
+  labels:
+    app: websocket-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: http-app
+      app: websocket-app
   template:
     metadata:
       labels:
-        app: http-app
+        app: websocket-app
     spec:
       containers:
-      - name: http-app
-        image: nginx:latest
+      - name: websocket-app
+        image: nginx:latest  
         ports:
         - containerPort: 80

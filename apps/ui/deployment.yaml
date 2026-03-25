@@ -1,19 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: http-app
+  name: ui-app
+  labels:
+    app: ui-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: http-app
+      app: ui-app
   template:
     metadata:
       labels:
-        app: http-app
+        app: ui-app
     spec:
       containers:
-      - name: http-app
+      - name: ui-app
         image: nginx:latest
         ports:
         - containerPort: 80
