@@ -49,7 +49,7 @@ metadata:
   namespace: argo-workflows
 spec:
   accessModes: [ReadWriteOnce]
-  storageClassName: minio-csi-storage
+  storageClassName: local-path
   resources:
     requests:
       storage: 500Mi
