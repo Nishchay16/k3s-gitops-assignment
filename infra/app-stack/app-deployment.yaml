@@ -10,7 +10,7 @@ metadata:
   name: ui-service
   namespace: my-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: ui
@@ -48,7 +48,7 @@ metadata:
   name: http-service
   namespace: my-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: http
@@ -84,7 +84,7 @@ metadata:
   name: ws-service
   namespace: my-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: ws

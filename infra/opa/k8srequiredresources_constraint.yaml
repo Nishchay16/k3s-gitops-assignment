@@ -13,6 +13,7 @@ spec:
       - argocd
       - argo-workflows
       - nats-io
+      - my-app
   parameters:
     cpu: "200m"
     memory: "256Mi"
